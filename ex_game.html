@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width" initial-scale="1"/>
+    <head>
+        <style>
+body{
+height:100%;
+width:100%;
+margin:.2rem 0rem;
+padding:0;
+display:flex;
+align-items:center;
+flex-direction:column;
+gap:.3rem;
+}
+.score-cont{
+width:100%;
+display:flex;
+align-items:center;
+justify-content:space-between;
+background:whitesmoke;
+margin-bottom:.4rem;
+font-family:'Arial';
+font-size:1rem;
+}
+.score-cont div{
+width: 90px;
+height:65px;
+background:orange;
+color: black;
+font-size:3rem;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+.box-cont {
+background:whitesmoke;
+display:grid;
+grid-template-columns: 1fr 1fr 1fr;
+grid-template-rows: 1fr 1fr 1fr;
+width:300px;
+height:300px;
+box-shadow: 1px 2px 10px rgba(0,0,0,0.5), 2px 3px 10px rgba(0,0,0,0.3)
+}
+.box-cont::after {
+content: "";
+width:300px;
+height:300px;
+position:absolute;
+border:none;
+background:transparent;
+transform:scale(0.69);
+z-index:-1;
+}
+.h123::after{
+border-top:4px solid #000;
+z-index:1;
+}
+.h147::after{
+border-left:4px solid black;
+z-index:1;
+}
+.h789::after{
+border-bottom:4px solid black;
+z-index:1;
+}
+.h369::after{
+border-right:4px solid black;
+z-index:1;
+}
+.h456::after{
+border-top:4px solid black;
+top:100px;
+z-index:1;
+}
+.h258::after{
+border-left:4px solid black;
+left:100px;
+z-index:1;
+}
+.h159::after{
+border-left:3px solid black;
+transform:rotateZ(-405deg);
+top:-85px;
+left:105px;
+height:250px;
+z-index:1;
+}
+.h357::after{
+border-left:3px solid black;
+transform:rotateZ(405deg);
+top:128px;
+left:105px;
+height:250px;
+z-index:1;
+}
+.box{
+background:orange;
+color:black;
+width:100%;
+height:100px;
+font-size:4rem;
+font-family:'Century Gothic';
+display:flex;
+justify-content:center;
+align-items:center;
+cursor:pointer;
+}
+
+.box:nth-child(even){
+background:#eee;
+color:black;
+}
+.info, .vic-box{
+font-size:1.5rem;
+font-family:'Arial';
+}
+h2{
+font-family:'Century Gothic';
+}
+button{
+padding:.8rem 1.7rem;
+border:none;
+background:orange;
+margin:1rem 0;
+font-size:.9rem;
+}
+</style>
+        <title>X | O </title>
+    </head>
+
+    <body>
+<h2> X and O Game </h2>
+<div class="score-cont">
+<div class="player1-score">0</div>
+<p>Scores</p>
+<div class="player2-score">0</div>
+</div>
+<div class="info"></div>
+<div class="vic-box"></div>
+<div style="position:relative;overflow:hidden;">       
+<div class="box-cont">
+<div class="box" id='1' tabindex="1"></div>
+<div class="box" id='2' tabindex="2"></div>
+<div class="box" id='3'tabindex="3"></div>
+<div class="box" id='4'tabindex="4"></div>
+<div class="box" id='5'tabindex="5"></div>
+<div class="box" id='6'tabindex="6"></div>
+<div class="box" id='7'tabindex="7"></div>
+<div class="box" id='8'tabindex="8"></div>
+<div class="box" id='9'tabindex="9"></div>
+</div>
+</div>
+<button onClick="window.location.reload()">Reset</button>
+    </body>
+<script>
+
+let currentPlayer = Math.floor(Math.random() * 3);
+currentPlayer === 0 ? currentPlayer+=1 : currentPlayer;
+let symbol = ["", "X", "O"];
+let currentSymbol;
+let boardScores = [1,2,3,4,5,6,7,8,9];
+let boardSamples = [[1,2,3],[1,4,7],[7,8,9],[3,6,9],[4,5,6],[1,5,9],[3,5,7],[2,5,8]];
+let box = document.querySelectorAll('.box');
+let score1 = document.querySelector('.player1-score');
+let score2 = document.querySelector('.player2-score');
+let player1Nums = [];
+let player2Nums = [];
+let scores = ['', 0,0]
+let infoBox = document.querySelector('.info');
+infoBox.innerText = `Player ${currentPlayer}`
+let victoryBox = document.querySelector('.vic-box');
+function updateCurrentPlayer(current) {
+currentPlayer = parseInt(current)
+//console.log(currentPlayer)
+}
+let refresh = ()=> {
+player1Nums = [];
+player2Nums = [];
+setTimeout(() => {
+for(i=0; i < box.length ; i++){
+box[i].innerText = '';
+box[i].setAttribute("data-id", "");
+box[i].dataset.id = "";
+box[i].removeAttribute('data-id')
+}
+victoryBox.style.display = "none";
+}, 1500)
+setTimeout(() => {
+infoBox.style.display = "block";
+}, 1500)
+}
+//refresh()
+function updateScores(player, classNum){
+document.getElementsByClassName('box-cont')[0].classList.add("h"+classNum.join(""))
+victoryBox.style.display = "block";
+infoBox.style.display = "none";
+scores[player]+= 1;
+score1.innerText = scores[1];
+score2.innerText = scores[2]
+//console.log(scores)
+setTimeout(() => {
+document.getElementsByClassName('box-cont')[0].classList.remove("h"+classNum.join(""))
+},1500)
+refresh()
+}
+let checkIfEmpty = (elem)=>{
+return elem.getAttribute('data-id')
+}
+function checkStatus(samples, lists){
+let resultArr = [];
+let indArr;
+let result;
+let tempArr = []
+let length = tempArr.length;
+if(lists.length >= 3){
+ for(i=0; i < samples.length; i++){
+indArr = samples[i];
+ for(j=0; j < lists.length; j++){
+result = indArr.find((num) => num === parseInt(lists[j]));
+tempArr.push(result)
+lengthArr = tempArr.length;
+if(tempArr.length == lists.length){
+resultArr.push([...tempArr])
+//console.log("temp list", resultArr, lists)
+tempArr = [];
+
+}
+
+//console.log(`the array is ${indArr}, the value is ${lists[j]}`)
+//console.log(resultArr)
+
+}
+
+} // end of for loop
+return resultArr;
+} // end of if statement
+}// end of function
+
+function checkBoard(list, player){
+let uniqueArr = []
+let newUniqueArr = [];
+finalAns = []
+let resArr = checkStatus(boardSamples, list);
+//console.log(checkStatus(boardSamples, list))
+resArr && resArr.forEach((indArr, index) => {
+uniqueArr.push([...new Set(indArr)])
+
+newUniqueArr.push([uniqueArr[index].map(indElem => typeof indElem === "number")])
+//console.log(newUniqueArr[index])
+for(i=0; i< newUniqueArr[index].length; i++){
+
+for(j=0; j< newUniqueArr[index][i].length; j++){
+//console.log(newUniqueArr[index][i][j])
+if (newUniqueArr[index][i][j] === true) {newUniqueArr[index][i][j] = "a";}
+else {newUniqueArr[index][i][j] = "b";} 
+}
+newUniqueArr[index][i].sort()
+}
+//console.log(newUniqueArr[index].join(","));
+newUniqueArr[index].join(",").includes("a,a,a") && finalAns.push(newUniqueArr[index], index)
+
+//console.log(finalNewArray)
+})
+return {player:player,winningPoint:boardSamples[finalAns[1]] || ""};
+}
+
+
+
+for(i=0; i < box.length ; i++){
+box[i].addEventListener('click', (e)=>{
+if(checkIfEmpty(e.target) === null){
+e.target.setAttribute('data-id','not-empty');
+currentSymbol = symbol[currentPlayer];
+if(currentPlayer == 1){
+player1Nums.push(parseInt(e.target.getAttribute('id')));
+if(player2Nums.length == 4 && player1Nums.length == 5) refresh();
+//console.log('player one', player1Nums, 'player 2', player2Nums)
+let classNum = checkBoard(player1Nums, 1);
+if(classNum.winningPoint.length !== 0){
+infoBox.style.display = "none";
+victoryBox.innerText = "Player 1 Wins";
+updateScores(1, classNum.winningPoint);
+}
+}else{
+player2Nums.push(parseInt(e.target.getAttribute('id')));
+let classNum = checkBoard(player2Nums, 2);
+//console.log('player one', player1Nums, 'player 2', player2Nums)
+if(player2Nums.length == 5 && player1Nums.length == 4) refresh();
+if(classNum.winningPoint.length !== 0){
+infoBox.style.display = "none";
+victoryBox.innerText = "Player 2 Wins";
+updateScores(2, classNum.winningPoint);
+//window.setTimeout(() => window.location.reload(), 2000);
+}
+}
+
+e.target.innerText = currentSymbol;
+if(currentPlayer === 1){updateCurrentPlayer(2); infoBox.innerText = `Player 2`}else {updateCurrentPlayer(1); infoBox.innerText = `Player 1`}
+//if(currentPlayer === 2){updateCurrentPlayer(1); infoBox.innerText = `Player ${currentPlayer}`}else {updateCurrentPlayer(1); infoBox.innerText = `Player ${currentPlayer}`}
+}else{infoBox.innerText = 'Try another Box' }
+})
+}
+
+//console.log(checkIfEmpty(document.querySelector('')));
+</script>
+</html>
